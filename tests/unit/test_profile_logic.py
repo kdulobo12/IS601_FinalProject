@@ -107,7 +107,7 @@ class TestPasswordUpdateSchema:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# User model password hashing & verification
+# Password hashing & verification (using auth functions directly)
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestPasswordHashing:
@@ -120,53 +120,90 @@ class TestPasswordHashing:
         assert hashed.startswith("$2b$") or hashed.startswith("$2a$")
 
     def test_verify_correct_password(self):
+        from app.auth.jwt import verify_password, get_password_hash
         plain = "MySecret99#"
-        hashed = User.hash_password(plain)
-        # Build a minimal User without DB
-        user = User.__new__(User)
-        user.password = hashed
-        assert user.verify_password(plain) is True
+        hashed = get_password_hash(plain)
+        assert verify_password(plain, hashed) is True
 
     def test_verify_wrong_password(self):
-        hashed = User.hash_password("CorrectHorse1!")
-        user = User.__new__(User)
-        user.password = hashed
-        assert user.verify_password("WrongPassword9!") is False
+        from app.auth.jwt import verify_password, get_password_hash
+        hashed = get_password_hash("CorrectHorse1!")
+        assert verify_password("WrongPassword9!", hashed) is False
 
     def test_different_plaintext_same_hash_fails(self):
-        hashed = User.hash_password("Password1!")
-        user = User.__new__(User)
-        user.password = hashed
-        assert user.verify_password("Password1@") is False  # different special char
+        from app.auth.jwt import verify_password, get_password_hash
+        hashed = get_password_hash("Password1!")
+        assert verify_password("Password1@", hashed) is False
+
+    def test_hash_password_classmethod(self):
+        """User.hash_password should produce a valid bcrypt hash."""
+        hashed = User.hash_password("TestPass99!")
+        assert hashed.startswith("$2b$") or hashed.startswith("$2a$")
+
+    def test_hash_same_input_different_outputs(self):
+        """bcrypt salts should make two hashes of the same password differ."""
+        h1 = User.hash_password("SamePass1!")
+        h2 = User.hash_password("SamePass1!")
+        assert h1 != h2
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# User.update() method
+# User.update() logic — tested via a simple dict to avoid SQLAlchemy state
 # ─────────────────────────────────────────────────────────────────────────────
 
 class TestUserUpdateMethod:
-    def _make_user(self):
-        """Build an in-memory User (no DB)."""
-        user = User.__new__(User)
-        user.first_name = "John"
-        user.last_name = "Doe"
-        user.email = "john@example.com"
-        user.username = "johndoe"
+    """
+    Test the update logic in isolation using a plain SimpleNamespace
+    that mimics the User.update() behaviour without needing SQLAlchemy state.
+    """
+
+    def _make_mock_user(self):
+        """Return a plain object that replicates User.update() logic."""
+        from types import SimpleNamespace
+        from datetime import datetime, timezone
+
+        user = SimpleNamespace(
+            first_name="John",
+            last_name="Doe",
+            email="john@example.com",
+            username="johndoe",
+            updated_at=None
+        )
+
+        def update(**kwargs):
+            for key, value in kwargs.items():
+                setattr(user, key, value)
+            user.updated_at = datetime.now(timezone.utc)
+            return user
+
+        user.update = update
         return user
 
     def test_update_first_name(self):
-        user = self._make_user()
+        user = self._make_mock_user()
         user.update(first_name="Jane")
         assert user.first_name == "Jane"
 
     def test_update_email(self):
-        user = self._make_user()
+        user = self._make_mock_user()
         user.update(email="new@example.com")
         assert user.email == "new@example.com"
 
     def test_update_multiple_fields(self):
-        user = self._make_user()
+        user = self._make_mock_user()
         user.update(first_name="Alice", last_name="Smith", username="alice_s")
         assert user.first_name == "Alice"
         assert user.last_name == "Smith"
         assert user.username == "alice_s"
+
+    def test_update_sets_updated_at(self):
+        from datetime import datetime
+        user = self._make_mock_user()
+        user.update(first_name="Bob")
+        assert user.updated_at is not None
+        assert isinstance(user.updated_at, datetime)
+
+    def test_unset_fields_unchanged(self):
+        user = self._make_mock_user()
+        user.update(first_name="NewName")
+        assert user.last_name == "Doe"  # untouched

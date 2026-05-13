@@ -32,7 +32,7 @@
       Profile Information
     </h2>
 
-    <form id="profileForm" class="space-y-4">
+    <form id="profileForm" class="space-y-4" novalidate>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -129,25 +129,34 @@
     el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  async function loadProfile() {
-    const token = getToken();
-    if (!token) { window.location.href = '/login'; return; }
+async function loadProfile() {
+  const token = getToken();
 
-    try {
-      const res = await fetch(`${API_BASE}/users/me`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.status === 401) { window.location.href = '/login'; return; }
-      if (!res.ok) throw new Error('Failed to load profile.');
-      const data = await res.json();
-      document.getElementById('firstName').value = data.first_name || '';
-      document.getElementById('lastName').value = data.last_name || '';
-      document.getElementById('username').value = data.username || '';
-      document.getElementById('email').value = data.email || '';
-    } catch (err) {
-      showError(err.message);
-    }
+  if (!token) {
+    return;
   }
+
+  try {
+    const res = await fetch(`${API_BASE}/users/me`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 401) {
+      showError('Please log in again.');
+      return;
+    }
+
+    if (!res.ok) throw new Error('Failed to load profile.');
+
+    const data = await res.json();
+    document.getElementById('firstName').value = data.first_name || '';
+    document.getElementById('lastName').value = data.last_name || '';
+    document.getElementById('username').value = data.username || '';
+    document.getElementById('email').value = data.email || '';
+  } catch (err) {
+    showError(err.message);
+  }
+}
 
   // Profile update
   document.getElementById('profileForm').addEventListener('submit', async function(e) {
