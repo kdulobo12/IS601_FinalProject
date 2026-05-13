@@ -202,14 +202,41 @@ This project uses GitHub Actions to:
 # 📸 Screenshots Included
 
 - GitHub Actions successful workflow
+
+<img width="2468" height="312" alt="image" src="https://github.com/user-attachments/assets/768ffbcb-6004-46c1-9a14-d2544844f367" />
+
 - Docker Hub deployment
+  <img width="452" height="260" alt="image" src="https://github.com/user-attachments/assets/601e9cd6-9eb9-4e27-b468-227fc815357a" />
+  
 - User registration/login
+<img width="3350" height="1870" alt="image" src="https://github.com/user-attachments/assets/102baf76-d3a0-4605-9159-2a3141ada75d" />
+
 - Add calculation
+<img width="2542" height="670" alt="image" src="https://github.com/user-attachments/assets/9b7212a8-dab4-41a5-8ca3-93b4dda1b496" />
+
+
 - Browse calculations
+<img width="3048" height="1020" alt="image" src="https://github.com/user-attachments/assets/b5e4a9de-7b56-4717-bbdf-bdc28ee0afee" />
+
 - Edit calculation
+
+<img width="1230" height="681" alt="Screenshot 2026-05-13 at 19 48 17" src="https://github.com/user-attachments/assets/fe03f5ad-60a9-45ec-8aef-825a3badd1a6" />
+
+
+<img width="3360" height="2100" alt="image" src="https://github.com/user-attachments/assets/8713cbc0-9d38-43cf-aa01-318b5540322b" />
+
 - Delete calculation
+<img width="3360" height="2100" alt="image" src="https://github.com/user-attachments/assets/61bae754-40dd-4862-8335-ec778a627766" />
+
 - User profile page
+
+<img width="3292" height="1060" alt="image" src="https://github.com/user-attachments/assets/e8f01ae4-a973-4103-9bd9-f88986c37cf9" />
+
 - Password change workflow
+
+<img width="2104" height="904" alt="image" src="https://github.com/user-attachments/assets/3079f60a-94ed-476e-89b5-42ccaa559622" />
+
+<img width="3360" height="2100" alt="image" src="https://github.com/user-attachments/assets/7ad2c8f2-03fb-49d6-9707-da9173ea4dab" />
 
 ---
 
