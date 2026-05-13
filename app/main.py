@@ -258,3 +258,94 @@ def delete_calculation(
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="127.0.0.1", port=8001, log_level="info")
+
+# ============================================================
+# User Profile & Password Change Routes
+# ============================================================
+
+from app.schemas.user import UserUpdate, PasswordUpdate
+
+
+@app.get("/profile", response_class=HTMLResponse, tags=["web"])
+def profile_page(request: Request):
+    return templates.TemplateResponse("profile.html", {"request": request})
+
+
+@app.get("/users/me", response_model=UserResponse, tags=["users"])
+def get_my_profile(
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Get the current authenticated user's full profile from DB."""
+    user = db.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    return user
+
+
+@app.put("/users/me", response_model=UserResponse, tags=["users"])
+def update_my_profile(
+    user_update: UserUpdate,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Update the current user's profile (first name, last name, email, username)."""
+    user = db.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    update_data = user_update.dict(exclude_unset=True)
+
+    # Check uniqueness of email/username if being changed
+    if "email" in update_data and update_data["email"] != user.email:
+        existing = db.query(User).filter(User.email == update_data["email"]).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Email already in use.")
+
+    if "username" in update_data and update_data["username"] != user.username:
+        existing = db.query(User).filter(User.username == update_data["username"]).first()
+        if existing:
+            raise HTTPException(status_code=400, detail="Username already taken.")
+
+    try:
+        user.update(**update_data)
+        db.commit()
+        db.refresh(user)
+        return user
+    except ValueError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.put("/users/me/password", response_model=UserResponse, tags=["users"])
+def change_my_password(
+    password_update: PasswordUpdate,
+    current_user=Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Change the current user's password."""
+    user = db.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    if not user.verify_password(password_update.current_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect.")
+
+    # Validate new password strength (reuse schema validator logic)
+    new_pw = password_update.new_password
+    if len(new_pw) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters.")
+    if not any(c.isupper() for c in new_pw):
+        raise HTTPException(status_code=400, detail="Password must contain an uppercase letter.")
+    if not any(c.islower() for c in new_pw):
+        raise HTTPException(status_code=400, detail="Password must contain a lowercase letter.")
+    if not any(c.isdigit() for c in new_pw):
+        raise HTTPException(status_code=400, detail="Password must contain a digit.")
+    if not any(c in "!@#$%^&*()_+-=[]{}|;:,.<>?" for c in new_pw):
+        raise HTTPException(status_code=400, detail="Password must contain a special character.")
+
+    user.password = User.hash_password(password_update.new_password)
+    user.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(user)
+    return user
