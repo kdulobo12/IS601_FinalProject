@@ -1,0 +1,262 @@
+{% extends "layout.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<!-- Alert banners -->
+<div id="errorAlert" class="hidden bg-red-100 border border-red-500 text-red-800 px-4 py-3 rounded-md mb-4">
+  <div class="flex items-center">
+    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+    </svg>
+    <span id="errorMessage"></span>
+  </div>
+</div>
+<div id="successAlert" class="hidden bg-green-100 border border-green-500 text-green-800 px-4 py-3 rounded-md mb-4">
+  <div class="flex items-center">
+    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+    </svg>
+    <span id="successMessage"></span>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto space-y-8">
+
+  <!-- Profile Info Card -->
+  <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-100">
+    <h2 class="text-xl font-bold mb-6 text-gray-800 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M5.121 17.804A13.937 13.937 0 0112 15c2.757 0 5.315.8 7.436 2.168M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Profile Information
+    </h2>
+
+    <form id="profileForm" class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+          <input id="firstName" type="text" placeholder="First Name"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        </div>
+        <div>
+          <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+          <input id="lastName" type="text" placeholder="Last Name"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        </div>
+      </div>
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+        <input id="username" type="text" placeholder="Username"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input id="email" type="email" placeholder="Email"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <div class="pt-2">
+        <button type="submit" id="saveProfileBtn"
+          class="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium transition-colors duration-200">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Password Change Card -->
+  <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-100">
+    <h2 class="text-xl font-bold mb-6 text-gray-800 flex items-center">
+      <svg class="w-6 h-6 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+      Change Password
+    </h2>
+
+    <form id="passwordForm" class="space-y-4">
+      <div>
+        <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+        <input id="currentPassword" type="password" placeholder="Current password"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <div>
+        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+        <input id="newPassword" type="password" placeholder="New password"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+        <p class="text-xs text-gray-500 mt-1">Min 8 chars, uppercase, lowercase, number, special character.</p>
+      </div>
+      <div>
+        <label for="confirmNewPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+        <input id="confirmNewPassword" type="password" placeholder="Confirm new password"
+          class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+      </div>
+      <!-- Client-side validation message -->
+      <p id="pwMatchMsg" class="text-xs text-red-500 hidden">Passwords do not match.</p>
+      <div class="pt-2">
+        <button type="submit" id="changePasswordBtn"
+          class="w-full sm:w-auto bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 
+                 focus:outline-none focus:ring-2 focus:ring-green-500 font-medium transition-colors duration-200">
+          Change Password
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  const API_BASE = '';
+
+  function getToken() {
+    return localStorage.getItem('access_token');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorAlert');
+    document.getElementById('errorMessage').textContent = msg;
+    el.classList.remove('hidden');
+    document.getElementById('successAlert').classList.add('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function showSuccess(msg) {
+    const el = document.getElementById('successAlert');
+    document.getElementById('successMessage').textContent = msg;
+    el.classList.remove('hidden');
+    document.getElementById('errorAlert').classList.add('hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  async function loadProfile() {
+    const token = getToken();
+    if (!token) { window.location.href = '/login'; return; }
+
+    try {
+      const res = await fetch(`${API_BASE}/users/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401) { window.location.href = '/login'; return; }
+      if (!res.ok) throw new Error('Failed to load profile.');
+      const data = await res.json();
+      document.getElementById('firstName').value = data.first_name || '';
+      document.getElementById('lastName').value = data.last_name || '';
+      document.getElementById('username').value = data.username || '';
+      document.getElementById('email').value = data.email || '';
+    } catch (err) {
+      showError(err.message);
+    }
+  }
+
+  // Profile update
+  document.getElementById('profileForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const token = getToken();
+    if (!token) { window.location.href = '/login'; return; }
+
+    const payload = {
+      first_name: document.getElementById('firstName').value.trim(),
+      last_name: document.getElementById('lastName').value.trim(),
+      username: document.getElementById('username').value.trim(),
+      email: document.getElementById('email').value.trim()
+    };
+
+    // Client-side validation
+    if (!payload.first_name || !payload.last_name || !payload.username || !payload.email) {
+      showError('All fields are required.'); return;
+    }
+    if (payload.username.length < 3) {
+      showError('Username must be at least 3 characters.'); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+      showError('Please enter a valid email address.'); return;
+    }
+
+    const btn = document.getElementById('saveProfileBtn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch(`${API_BASE}/users/me`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Update failed.');
+      showSuccess('Profile updated successfully!');
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Save Changes';
+    }
+  });
+
+  // Password change
+  const newPwInput = document.getElementById('newPassword');
+  const confirmPwInput = document.getElementById('confirmNewPassword');
+  const pwMatchMsg = document.getElementById('pwMatchMsg');
+
+  function checkPasswordMatch() {
+    if (confirmPwInput.value && newPwInput.value !== confirmPwInput.value) {
+      pwMatchMsg.classList.remove('hidden');
+    } else {
+      pwMatchMsg.classList.add('hidden');
+    }
+  }
+  newPwInput.addEventListener('input', checkPasswordMatch);
+  confirmPwInput.addEventListener('input', checkPasswordMatch);
+
+  document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const token = getToken();
+    if (!token) { window.location.href = '/login'; return; }
+
+    const currentPw = document.getElementById('currentPassword').value;
+    const newPw = newPwInput.value;
+    const confirmPw = confirmPwInput.value;
+
+    if (!currentPw || !newPw || !confirmPw) { showError('All password fields are required.'); return; }
+    if (newPw !== confirmPw) { showError('New passwords do not match.'); return; }
+    if (newPw.length < 8) { showError('New password must be at least 8 characters.'); return; }
+    if (!/[A-Z]/.test(newPw)) { showError('Password must contain an uppercase letter.'); return; }
+    if (!/[a-z]/.test(newPw)) { showError('Password must contain a lowercase letter.'); return; }
+    if (!/\d/.test(newPw)) { showError('Password must contain a number.'); return; }
+    if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(newPw)) {
+      showError('Password must contain a special character.'); return;
+    }
+
+    const btn = document.getElementById('changePasswordBtn');
+    btn.disabled = true; btn.textContent = 'Updating...';
+
+    try {
+      const res = await fetch(`${API_BASE}/users/me/password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          current_password: currentPw,
+          new_password: newPw,
+          confirm_new_password: confirmPw
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Password change failed.');
+      showSuccess('Password changed successfully! Please log in again with your new password.');
+      document.getElementById('passwordForm').reset();
+      // Force re-login after password change for security
+      setTimeout(() => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        window.location.href = '/login';
+      }, 2500);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      btn.disabled = false; btn.textContent = 'Change Password';
+    }
+  });
+
+  // Load on page ready
+  loadProfile();
+</script>
+{% endblock %}
