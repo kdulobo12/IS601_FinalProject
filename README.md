@@ -240,6 +240,16 @@ This project uses GitHub Actions to:
 
 ---
 
+## 🌟 Innovation & Extra Features
+
+- Calculation history is sorted newest-first using timestamps.
+- Dashboard includes calculation statistics such as total calculations, most-used operation, and average result.
+- Dark mode toggle improves user experience and accessibility.
+- Profile page includes client-side validation and secure password update flow.
+- Password change forces re-login for improved security.
+
+---
+
 # 🔐 Security Features
 
 - JWT authentication
